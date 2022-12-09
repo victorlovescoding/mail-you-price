@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://img.freepik.com/free-vector/cute-spider-with-net-cartoon-illustration-animal-nature-concept-isolated-flat-cartoon-style_138676-2730.jpg?w=900&t=st=1670310671~exp=1670311271~hmac=26d1834ccffa459dc363fa6a5fbb2fc63bf7849a1a370b2845653617678e6982">
+    <title>Mail You Price</title>
+    <style>
+        *{
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family:"Microsoft JhengHei",sans-serif
+        }
+        body{
+            background-color: #F1F2F2;
+        }
+
+        header{
+            height: 100vh;
+            background: linear-gradient(130deg, #A4BFEF 50%, #6A93CB 100%);
+            background-size:cover;
+        }
+        header button{
+            cursor: pointer;
+            background-color: #40739e;
+            font-size: 1.5rem;
+            border-radius: 30px;
+            display: block;
+            color: #ffffff;
+            padding: 1rem;
+            font-weight: bold;
+            border-radius: 30px;
+            border: none;
+        }
+        header a{
+            margin-top: 1rem;
+            width: fit-content;
+            display: block;
+            cursor: pointer;
+            color: #40739e;
+            font-size: 1.5rem;
+            text-decoration: none;
+            border-radius: 30px;
+            background-color: #ffffff;
+            padding: .7rem;
+            font-weight: bold;
+            border-radius: 30px;
+            border: none;
+        }
+        header a:hover{
+            background-color: #40739e;
+            color: #ffffff;
+        }
+
+        header button:hover{
+            color: #40739e;
+            background-color: #ffffff;
+        }
+        header .banner{
+            height:40vh;
+            color: #ffffff;
+            line-height: 1.7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        header h1{
+            font-size: 2.5rem;
+        }
+        header h2{
+            font-size: 2rem;
+        }
+        .memberShip{
+            position: relative;
+            width: 85vw;
+            background-color: #ffffff;
+            box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.1);
+        }
+        #head{
+            display: flex;
+            justify-content: center;
+        }
+        #memberContainer{
+            width: fit-content;
+            margin: auto;
+            box-shadow: 0px 5px 5px 5px rgba(0, 0, 0, 0.1);
+        }
+        h3{
+            font-size: 1.3rem;
+            padding: 1.5rem;
+            cursor: pointer;
+            text-align: center;
+        }
+        #logIn{
+            width: 50%; 
+        }
+        #signUp{
+            background-color: #F1F2F2;
+            width: 50%;
+        }
+        form{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        form input{
+            width: 85%;
+            padding: .5rem;
+            border: none;
+            border: 1px solid #E6E8E8;
+        }
+        #nameInput{
+            display: none;
+        }
+        form #loginBtn{
+            cursor: pointer;
+            width: 85%;
+            font-size: 1.2rem;
+            font-weight: bold;
+            background-color: #4DA55F;
+            color: #ffffff;
+            border: none;
+            padding: 1rem 0;
+            margin-bottom: 1rem;
+        }
+        #successMsg{
+            margin: .3rem;
+            color: red;
+            font-weight: bold;
+        }
+        .advertisement{
+            margin: 3.5rem .5rem;
+            border-bottom: 2px solid #CCCCCC;
+            padding-bottom:3rem;
+        }
+        .advertisement .left h2,
+        .advertisement .left p{
+            width: 80vw;
+            margin: .7rem auto;
+        }
+        .advertisement img{
+            display: block;
+            width: 90vw;
+            margin: auto;
+            border-radius: 20px;   
+        }
+        .feature{
+            margin-top: 2rem;
+            border-bottom: 3px solid #CCCCCC;
+        }
+        .feature div{
+            margin: 4rem 0;
+        }
+        .feature div img{
+            display: block;
+            width: 40vw;
+            margin: auto;
+            border-radius: 50%;
+            box-shadow: 0 0 10px 2px #3333331a;
+        }
+
+        .instruction h2{
+            text-align: center;
+            margin: 3rem auto 3rem auto;
+            padding-left: 1rem;
+            border-left: 5px solid #40739e;
+            width: fit-content;
+        }
+        .instruction img{
+            display: block;
+            width: 80vw;
+            margin: auto;
+            border-radius: 15px;
+            box-shadow: 0 0 10px 2px #3333331a;
+        }
+        .instruction div{
+            margin: 3rem 0;
+        }
+        .instruction div p{
+            text-align: center;
+            margin-top: .5rem;
+            color:  #353b48;
+            font-weight: 600;
+            font-size: 1.5rem;
+        }
+        footer{
+            background-color: #223344;
+            padding: 1.5rem;
+        }
+        footer p{
+            color: #ededed;
+            text-align: center;
+        }
+        .email{
+            margin: 1.5rem 0;
+        }
+        @media screen and (min-width:660px){
+            header h1{
+            font-size: 5.5rem;
+        }
+            header h2{
+            font-size: 3rem;
+        }
+            .memberShip{
+                max-width: 400px;
+                height: fit-content;
+            }
+            .advertisement{
+                display: flex;
+                align-items: center;
+            }
+            .advertisement .left{
+                width: 50%;
+            }
+            .advertisement .left h2{
+                font-size: 1.8rem;
+            }
+            .advertisement .left p{
+                font-size: 1.3rem;
+                font-weight: 500;
+            }
+            .advertisement .left h2,
+            .advertisement .left p{
+                width: 80%;
+                line-height: 1.7;
+            }
+            .advertisement img{
+                width: 50%;
+            }
+            .feature{
+                display: flex;
+                justify-content: center;
+            }
+            .feature div img{
+                width: 20vw;
+            }
+            .feature div{
+                width: 30vw;
+            }
+            .instruction h2{
+                font-size: 3rem;
+            }
+            .instruction div{
+                width: 40vw;
+            }
+            .instruction div img{
+                width: 100%;
+            }
+            .instruction div:nth-of-type(1){
+                margin-left:5vw;
+            }
+            .instruction div:nth-of-type(2){
+                margin-left:55vw;
+            }
+            .instruction div:nth-of-type(3){
+                margin-left:5vw;
+            }
+        }
+
+        @media  screen and (min-width:1200px) {
+            .advertisement .left h2{
+                font-size: 2.5rem;
+            }
+            .advertisement .left p{
+                font-size: 1.7rem;
+                font-weight: 500;
+            }
+            .advertisement .left h2,
+            .advertisement .left p{
+                text-align: center;
+            }
+            .advertisement img{
+                width: 23%;
+                margin-left: 0;
+            }
+            .feature div img{
+                width: 10vw;
+            }
+            .instruction div img{
+                width: 20vw;
+                margin-bottom: 1rem;
+            }
+            .instruction div:nth-of-type(1){
+                margin-left:7vw;
+            }
+            .instruction div:nth-of-type(2){
+                margin-left:45vw;
+            }
+            .instruction div:nth-of-type(3){
+                margin-left:7vw;
+            }
+        }
+    </style>
+</head>
+<body>
+    
+    <header>
+        <div class="banner">
+            <h1>能自動絕不手動</h1>
+            <h2>這是你最後一次查詢價格</h2>
+            <a href="" id="">了解更多</a>
+        </div>
+        <div id="memberContainer">
+            <div class="memberShip">
+                <div id="head">
+                    <h3 id="logIn">
+                        Log in
+                    </h3>
+                    <h3 id="signUp">
+                        Sign up
+                    </h3>
+                </div>
+                <form action="/member" method="post">
+                    <input id="nameInput" type="text" name="name" placeholder="Name"><br>
+                    <input id="mailInput" type="email" placeholder="Email" name="mail" required><br>
+                    <input id="passwordInput" type="password" placeholder="Password" name="password" required><br>
+                    <button id="loginBtn" type="submit">Log in</button>
+                </form>
+                <p id="successMsg">{{successMsg}}</p> 
+            </div>
+        </div>
+    </header>
+    <div class="advertisement">
+        <div class="left">
+            <h2>想撿便宜卻不想每天手動查價錢嗎?</h2>
+            <p>勤儉持家的你必備好幫手!</p>
+        </div>
+        <img src="https://img.freepik.com/free-vector/illustration-search-box_53876-37578.jpg?w=1480&t=st=1670232240~exp=1670232840~hmac=1d323b687354b8f4f6922235ff92b22ff7129ab1ba371fd1616be9d190e6c918" alt="">
+    </div>
+    <div class="feature">
+        <div class="pchome">
+            <img src="https://fs-d.ecimg.tw/css/2016/style/images/v201607/sitelogo/h24.png" alt="pchome logo">
+            <h3>支援PCHOME</h3>
+        </div>
+        <div>
+            <img src="https://www.shutterstock.com/image-vector/flip-clock-twelve-o-cartoon-260nw-156597158.jpg" alt="12AM pic">
+            <h3>每天中午12點搜尋價格</h3>
+        </div>
+        <div>
+            <img src="https://media.istockphoto.com/id/1358437984/vector/promotion-email-concept-isolated-cute-mail-cartoon-facewith-promotions-coupon-vector.jpg?s=612x612&w=0&k=20&c=GOAWod2eFq9CdTcXl9gMnhZvEvRY9_7XDCKKG2_C_IQ=" alt="email pic">
+            <h3>發信通知</h3>
+        </div>
+    </div>
+    <div class="instruction">
+        <h2>三大步驟</h2>
+        <div>
+            <img src="https://pic.pimg.tw/v329852852/1670249813-349843651-g.png" alt="login">
+            <p>註冊帳號</p>
+        </div>
+        <div>
+            <img src="https://pic.pimg.tw/v329852852/1670249820-3143474835-g_n.png" alt="memer system">
+            <p>登入想追蹤的商品網址</p>
+        </div>
+        <div>
+            <img src="https://pic.pimg.tw/v329852852/1670249825-3094905614-g_n.png" alt="email">
+            <p>坐等系統發信!</p>
+        </div>
+    </div>
+    <footer>
+        <p>Copyright©2022 VictorChen All rights reserved</p>
+        <p class="email">mrcrawler987@gmail.com</p>
+    </footer>
+    <script>
+        const logIn = document.getElementById('logIn')
+        const signUp = document.getElementById('signUp')
+        const mailInput = document.getElementById('mailInput')
+        const passwordInput = document.getElementById('passwordInput')
+        const nameInput = document.getElementById('nameInput')
+        const memberContainer=document.getElementById('memberContainer')
+        const formEl = document.querySelector('form')
+        const loginBtn = document.querySelector('loginBtn')
+        signUp.addEventListener('click',()=>{
+            switchToSignUp()
+        })
+        logIn.addEventListener('click',()=>{
+            switchToLogIn()
+        })
+
+        function switchToSignUp(){
+            logIn.style.backgroundColor="#F1F2F2"
+            signUp.style.backgroundColor="#ffffff"
+            nameInput.style.display="block"
+            formEl.style.marginTop="1rem"
+            formEl.action="/"
+            loginBtn.textContent="Sign up"
+        }
+        function switchToLogIn(){
+            logIn.style.backgroundColor="#ffffff"
+            signUp.style.backgroundColor="#F1F2F2"
+            nameInput.style.display="none"
+            formEl.action="/member"
+            loginBtn.textContent="Log in"
+        }
+    </script>    
+</body>
+</html>

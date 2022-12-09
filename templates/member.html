@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" href="https://img.freepik.com/free-vector/cute-spider-with-net-cartoon-illustration-animal-nature-concept-isolated-flat-cartoon-style_138676-2730.jpg?w=900&t=st=1670310671~exp=1670311271~hmac=26d1834ccffa459dc363fa6a5fbb2fc63bf7849a1a370b2845653617678e6982">
+    <title>Mail You Price</title>
+    <style>
+      *{
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body{
+        background-color: #F1F2F2;
+      }
+      h1{
+        text-align: center;
+        margin: 1rem;
+      }
+      h1 a{
+        font-size: 1.5rem;
+        font-weight: 500;
+      }
+      h1 span{
+        word-wrap: break-word;
+        font-size: 1.3rem;
+      }
+      #trackContainer h4{
+        margin-bottom: .5rem;
+      }
+      .welcome{
+        text-align: center;
+        margin: 1rem;
+      }
+      #error{
+        text-align: center;
+        font-size: 1.5rem;
+        color: red;
+      }
+      #track p{
+        margin: .5rem auto;
+      }
+      #productData,#dataLength{
+        display: none;
+      }
+      #logOutBtn{
+        cursor: pointer;
+
+      }
+      #logOutBtn a{
+        font-size: .5rem;
+        text-decoration: none;
+        color: black;
+      }
+      #trackContainer{
+        width: 85vw;
+        margin: auto;
+      } 
+      form{
+        display: flex;
+        justify-content: center;
+        margin: 1rem auto;
+      }
+      #trackContainer form button{
+        display: block;
+        font-size: 1.2rem;
+        padding: .2rem; 
+      }
+      #followInput{
+        display: block;
+        width: 80%;
+        height: 5rem;
+        font-size: 1.2rem;
+       
+      }
+      #trackContainer *{
+        text-align: center;
+      }
+      #track{
+        cursor: pointer;
+        background-color: #ffffff;
+        box-shadow: 0 0 12px 3px rgba(0, 0, 0, 0.1);
+        margin: 1rem auto;
+        padding: .5rem;
+        border-radius: 15px;
+      }
+      #track:hover{
+        background-color: #95afc0;
+      }
+      #track a{
+        display: inline-block;
+        color: red;
+        text-decoration: none;
+        margin: .4rem 0;
+      }
+      #track h4{
+        margin: 1.5rem 0;
+      }
+      #deleteForm{
+        display: none;
+        z-index: -2000;
+        opacity: 0;
+      }
+      h3{
+        width:fit-content;
+        text-align: center;
+        font-size: 1.2rem;
+        margin: auto;
+        padding: .5rem;
+        background-color: yellow;
+      }
+      @media screen and (min-width:500px){
+        #trackContainer{
+          max-width: 35vw;
+        }
+      }
+
+  </style>
+  </head>
+  <body>
+    <h1>Hi <span> {{name}}!</span><br></h1>
+    <h2 class="welcome">歡迎來到會員專區! <a id="logOutBtn" href="/logout">登出</a></h2>
+    <h1 id="productData">{{productData}}</h1>
+    <h1 id="productName">{{productName}}</h1>
+    <!-- <p>{{price}}</p>
+    <p>{{priceMin}}</p>
+    <span>{{tilde}}</span>
+    <p>{{priceMax}}</p> -->
+    <p id="error">{{error}}</p>
+    <div id="trackContainer">
+      <form action="/member.html" method="post">
+        <input id="followInput" type="text" name="productSite" placeholder="輸入想追蹤的商品網址" />
+        <button type="submit">新增</button>
+      </form>
+
+    </div>
+    <form id="deleteForm" action="/delete.html" method="post">
+      <input id="deleteInput" type="text" name="deleteItem">
+    </form>
+    <h3>*Double click to delete</h3>
+    <script src="https://kit.fontawesome.com/3b9660ae0a.js" crossorigin="anonymous"></script>
+    <script>
+      if (window.history.replaceState) {
+          window.history.replaceState( null, null, window.location.href );
+        }
+      let productData = document.getElementById("productData").textContent;
+      const form = document.querySelector("form");  
+      const deleteInput = document.getElementById("deleteInput");  
+      const deleteForm = document.getElementById("deleteForm");
+      let dataLength=0;
+      const trackContainer = document.getElementById("trackContainer");
+      productData=productData.replaceAll('"',"'")
+      productData=productData.replaceAll("{'",'{"')
+      productData=productData.replaceAll("'}",'"}')
+      productData=productData.replaceAll("':",'":')
+      productData=productData.replaceAll(": '",': "')
+      productData=productData.replaceAll("', '",'", "')
+
+      //用迴圈找出{的數量代表有幾筆資料
+      for(let num=0;num<productData.length;num++){
+        if (productData[num]=="{"){
+          dataLength+=1         
+        }   
+      }
+      window.addEventListener('load',(e)=>{
+        const form = document.querySelectorAll('form')
+        const input = document.querySelectorAll('input')
+        
+      })
+
+      productData = JSON.parse(productData);
+      getDataLength(productData,dataLength)
+
+      function getDataLength(productData,dataLength){
+          if (dataLength!= "") {
+            for (num = 0; num < dataLength; num++) {
+              const div = document.createElement("div");
+              div.id="track"
+              div.innerHTML = `
+                  <h4>${productData[num]["productName"]}</h4>
+                  <hr>
+                  <a href="${productData[num]["productSite"]}">購物去</a>
+                `
+                trackContainer.appendChild(div);
+                const h4=document.querySelector('h4')
+
+                div.addEventListener('dblclick',()=>{
+                  if (confirm("確定要移除追蹤?")==true){
+                    let deleteItem=div.textContent
+                    deleteInput.value=deleteItem
+                    deleteForm.submit()
+                  }     
+                })    
+            }           
+          }        
+        }   
+    </script>
+  </body>
+</html>

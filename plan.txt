@@ -1,0 +1,27 @@
+
+功能清單: 可追蹤蝦皮
+         寫信頁面
+         yahoo可以靠爬html得到價錢
+         momo
+         蝦皮要靠api
+
+pchome 商品下架的api訊息
+try{jsonp_prodmain([]);}catch(e){if(window.console){console.log(e);}}
+
+pchome 商品下架的api訊息(herman miller)
+"https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/DEBH2V-A900FS71I&fields=Seq,Id,Name,Nick,Store,PreOrdDate,SpeOrdDate,Price,Discount,Pic,Weight,ISBN,Qty,Bonus,isBig,isSpec,isCombine,isDiy,isRecyclable,isCarrier,isMedical,isBigCart,isSnapUp,isDescAndIntroSync,isFoodContents,isHuge,isEnergySubsidy,isPrimeOnly,isPreOrder24h,isWarranty,isLegalStore,isFresh,isBidding,isSet,Volume,isArrival24h,isETicket,ShipType,isO2O,RealWH,ShipDay,ShipTag,isEbook,isSubscription,Subscription&_callback=jsonp_prodmain&1662364260?_callback=jsonp_prodmain"
+
+
+pchome 商品下架的網址(herman miller)
+https://24h.pchome.com.tw/prod/DEBH2V-A900FS71I?gclid=Cj0KCQiAkMGcBhCSARIsAIW6d0BGrVvpRXbWw9uuFYGSAC1HuYBWP_rmXiwIhdRFV0BmcbEsXUhwxwUaAtZNEALw_wcB
+
+-----------------------------
+
+新增功能: 蝦皮
+
+https://shopee.tw/%E5%AE%8C%E7%BE%8E%E4%B8%BB%E7%BE%A9%E2%94%82DIY%E5%95%86%E5%93%81-Alma%E6%97%A5%E5%BC%8F%E6%9C%A8%E7%B4%8B%E6%94%B6%E7%B4%8D%E6%AB%83(%E5%85%A9%E8%89%B2)-%E4%B8%89%E5%B1%A4%E6%AB%83-%E7%BD%AE%E7%89%A9%E6%AB%83%E3%80%90N0001%E3%80%91-i.6911881.3029597006?sp_atk=614d8347-a5d8-4c2c-8df2-575c8504f03b&xptdk=614d8347-a5d8-4c2c-8df2-575c8504f03b
+
+https://shopee.tw/api/v4/item/get?itemid=3029597006&shopid=6911881
+
+https://shopee.tw/api/v4/item/get?itemid="+itemid+"&shopid="+shopid
+
