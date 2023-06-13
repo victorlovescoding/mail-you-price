@@ -1,0 +1,110 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+body {
+  background-color: #f1f2f2;
+}
+h1 {
+  text-align: center;
+  margin: 1rem;
+}
+h1 a {
+  font-size: 1.5rem;
+  font-weight: 500;
+}
+h1 span {
+  word-wrap: break-word;
+  font-size: 1.3rem;
+}
+#trackContainer h4 {
+  margin-bottom: 0.5rem;
+}
+.welcome {
+  text-align: center;
+  margin: 1rem;
+}
+#error {
+  text-align: center;
+  font-size: 1.5rem;
+  color: red;
+}
+#track p {
+  margin: 0.5rem auto;
+}
+#productData,
+#dataLength {
+  display: none;
+}
+#logOutBtn {
+  cursor: pointer;
+}
+#logOutBtn a {
+  font-size: 0.5rem;
+  text-decoration: none;
+  color: black;
+}
+#trackContainer {
+  width: 85vw;
+  margin: auto;
+}
+form {
+  display: flex;
+  justify-content: center;
+  margin: 1rem auto;
+}
+#trackContainer form button {
+  display: block;
+  font-size: 1.2rem;
+  padding: 0.2rem;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
+}
+#followInput {
+  display: block;
+  width: 80%;
+  height: 5rem;
+  font-size: 1.2rem;
+}
+#trackContainer * {
+  text-align: center;
+}
+#track {
+  cursor: pointer;
+  background-color: #ffffff;
+  box-shadow: 0 0 12px 3px rgba(0, 0, 0, 0.1);
+  margin: 1rem auto;
+  padding: 0.5rem;
+  border-radius: 15px;
+}
+#track:hover {
+  background-color: #95afc0;
+}
+#track a {
+  display: inline-block;
+  color: red;
+  text-decoration: none;
+  margin: 0.4rem 0;
+}
+#track h4 {
+  margin: 1.5rem 0;
+}
+#deleteForm {
+  display: none;
+  z-index: -2000;
+  opacity: 0;
+}
+h3 {
+  width: fit-content;
+  text-align: center;
+  font-size: 1.2rem;
+  margin: auto;
+  padding: 0.5rem;
+  background-color: yellow;
+}
+@media screen and (min-width: 500px) {
+  #trackContainer {
+    max-width: 35vw;
+  }
+}

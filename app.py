@@ -1,31 +1,41 @@
 from flask import Flask,session,redirect
 from flask import request
 from flask import render_template
-import pymongo,certifi,json
+import bs4
+import pymongo,certifi
 #APScheduler 
 from apscheduler.schedulers.background import BackgroundScheduler
-
 #資料庫連接
-client = pymongo.MongoClient("xxx", tlsCAFile=certifi.where())
+
+client = pymongo.MongoClient("mongodb+srv://victordb:db2021@victorcluster.cu5rdb9.mongodb.net/?retryWrites=true&w=majority", tlsCAFile=certifi.where())
 db = client.test #操作資料庫
 collection=db.users #操作users集合
 app=Flask(
     __name__,
-    static_folder="public",
-    static_url_path="/"    
+    static_folder="static",
+    static_url_path="/static"    
 )
 
 app.secret_key="any string but secret"
 
 @app.route('/')
 def index():
-    #進到首頁時，如果原本已經登入，就直接進入會員系統
+    #進到首頁時，如果原本已經登入，就直接進入會員系統  
     if 'mail' in session:
         mail=session.get('mail')
-        return render_template('member.html',mail=mail)
-        
+        userData=collection.find_one({
+        "mail":mail
+        })
+        productData=userData['productData']
+        name=userData['name']
+        allProduct=[]
+        dataLength=len(productData)
+        for num in range(dataLength):
+            if productData[num]["productName"]!="":
+                allProduct.append(productData[num])
+        return render_template('member.html',productData=allProduct,name=name)
     else:
-        return render_template('index.html')
+        return render_template("index.html")
     
 
 @app.route('/',methods=["POST"])
@@ -51,9 +61,6 @@ def signUp():
     else:
         return render_template('index.html', successMsg="該信箱已被註冊")
     
-
-
-        
 
 @app.route('/member',methods=["POST"])
 def logIn():
@@ -140,46 +147,121 @@ def member():
 
 
 @app.route('/member.html',methods=['POST']) #動態路由
-def getPrice():  
+def addNewProduct():  
     import urllib.request as req
     site=request.form["productSite"]
     originSite=request.form["productSite"]
-    if site[8:11]=="24h":
+    if site[8:18]=="24h.pchome":
         mail=session.get('mail')
-        #判斷網址是否有"?"
-        if site.find("?")==-1:       
-            # commodity="https://24h.pchome.com.tw/prod/QAAF7N-A9006CPTZ"
-            site=site.replace("https://24h.pchome.com.tw/prod/","")
-            # url="https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/button&id=&fields=Seq,Id,Price,Qty,ButtonType,SaleStatus,isPrimeOnly,SpecialQty,Device&_callback=jsonp_prodbutton&1662133140?_callback=jsonp_prodbutton"
-            url="https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/"+site[0:16]+"&fields=Seq,Id,Name,Nick,Store,PreOrdDate,SpeOrdDate,Price,Discount,Pic,Weight,ISBN,Qty,Bonus,isBig,isSpec,isCombine,isDiy,isRecyclable,isCarrier,isMedical,isBigCart,isSnapUp,isDescAndIntroSync,isFoodContents,isHuge,isEnergySubsidy,isPrimeOnly,isPreOrder24h,isWarranty,isLegalStore,isFresh,isBidding,isSet,Volume,isArrival24h,isETicket,ShipType,isO2O,RealWH,ShipDay,ShipTag,isEbook,isSubscription,Subscription&_callback=jsonp_prodmain&1662364260?_callback=jsonp_prodmain"
-            with req.urlopen(url) as response:
-                commodity=response.read().decode("utf-8")
-            import json
-            commodity=commodity.replace('try{jsonp_prodmain(','')
-            commodity=commodity.replace(');}catch(e){if(window.console){console.log(e);}}','')
-            commodity=json.loads(commodity)
-            productName=str(commodity[site+"-000"]["Name"])
-            collection.update_one({
-                "mail":mail
-            },{
-                "$push":{
-                    "productData":
-                        {"productName":productName,"productSite":originSite}
-                }
-            })
+        if site[8:18]=="24h.pchome":
+            #判斷網址是否有"?"
+            if site.find("?")==-1:       
+                # commodity="https://24h.pchome.com.tw/prod/QAAF7N-A9006CPTZ"
+                site=site.replace("https://24h.pchome.com.tw/prod/","")
+                # url="https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/button&id=&fields=Seq,Id,Price,Qty,ButtonType,SaleStatus,isPrimeOnly,SpecialQty,Device&_callback=jsonp_prodbutton&1662133140?_callback=jsonp_prodbutton"
+                url="https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/"+site[0:16]+"&fields=Seq,Id,Name,Nick,Store,PreOrdDate,SpeOrdDate,Price,Discount,Pic,Weight,ISBN,Qty,Bonus,isBig,isSpec,isCombine,isDiy,isRecyclable,isCarrier,isMedical,isBigCart,isSnapUp,isDescAndIntroSync,isFoodContents,isHuge,isEnergySubsidy,isPrimeOnly,isPreOrder24h,isWarranty,isLegalStore,isFresh,isBidding,isSet,Volume,isArrival24h,isETicket,ShipType,isO2O,RealWH,ShipDay,ShipTag,isEbook,isSubscription,Subscription&_callback=jsonp_prodmain&1662364260?_callback=jsonp_prodmain"
+                with req.urlopen(url) as response:
+                    commodity=response.read().decode("utf-8")
+                import json
+                commodity=commodity.replace('try{jsonp_prodmain(','')
+                commodity=commodity.replace(');}catch(e){if(window.console){console.log(e);}}','')
+                commodity=json.loads(commodity)
+                productName=str(commodity[site+"-000"]["Name"])
+                collection.update_one({
+                    "mail":mail
+                },{
+                    "$push":{
+                        "productData":
+                            {"productName":productName,"productSite":originSite}
+                    }
+                })
 
-            #更新使用者資料庫後，馬上回傳使用者所有追蹤的網站(包含剛剛新增的)
-            userData=collection.find_one({
-            "mail":mail
-            })
-            productData=userData["productData"]
-            name=userData["name"]
-            dataLength=len(productData)
-            allProduct=[]
-            for num in range(dataLength):
-                if productData[num]["productName"]!="":
-                    allProduct.append(productData[num])
-            return render_template('member.html',dataLength=dataLength,productData=allProduct,name=name)
+                #更新使用者資料庫後，馬上回傳使用者所有追蹤的網站(包含剛剛新增的)
+                userData=collection.find_one({
+                "mail":mail
+                })
+                productData=userData["productData"]
+                name=userData["name"]
+                dataLength=len(productData)
+                allProduct=[]
+                for num in range(dataLength):
+                    if productData[num]["productName"]!="":
+                        allProduct.append(productData[num])
+                return render_template('member.html',dataLength=dataLength,productData=allProduct,name=name)
+
+            else:
+                #若確定網址有"?"就將?以及後面網址刪除，以利得到產品編號
+                lengthOfSite=len(site)
+                startOfDelete=site.find("?")
+                noNeedSite=site[startOfDelete:lengthOfSite]
+                needSite=site.replace(noNeedSite,'')
+                # commodity="https://24h.pchome.com.tw/prod/QAAF7N-A9006CPTZ"
+                site=needSite.replace("https://24h.pchome.com.tw/prod/","")
+                # url="https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/button&id=&fields=Seq,Id,Price,Qty,ButtonType,SaleStatus,isPrimeOnly,SpecialQty,Device&_callback=jsonp_prodbutton&1662133140?_callback=jsonp_prodbutton"
+                url="https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/"+site[0:16]+"&fields=Seq,Id,Name,Nick,Store,PreOrdDate,SpeOrdDate,Price,Discount,Pic,Weight,ISBN,Qty,Bonus,isBig,isSpec,isCombine,isDiy,isRecyclable,isCarrier,isMedical,isBigCart,isSnapUp,isDescAndIntroSync,isFoodContents,isHuge,isEnergySubsidy,isPrimeOnly,isPreOrder24h,isWarranty,isLegalStore,isFresh,isBidding,isSet,Volume,isArrival24h,isETicket,ShipType,isO2O,RealWH,ShipDay,ShipTag,isEbook,isSubscription,Subscription&_callback=jsonp_prodmain&1662364260?_callback=jsonp_prodmain"
+                with req.urlopen(url) as response:
+                    commodity=response.read().decode("utf-8")
+                import json
+                commodity=commodity.replace('try{jsonp_prodmain(','')
+                commodity=commodity.replace(');}catch(e){if(window.console){console.log(e);}}','')
+                commodity=json.loads(commodity)
+                productName=str(commodity[site+"-000"]["Name"])
+                collection.update_one({
+                    "mail":mail
+                },{
+                    "$push":{
+                        "productData":
+                            {"productName":productName,"productSite":needSite}
+                    }
+                })
+
+                #更新使用者資料庫後，馬上回傳使用者所有追蹤的網站(包含剛剛新增的)
+                userData=collection.find_one({
+                "mail":mail
+                })
+                productData=userData["productData"]
+                name=userData["name"]
+                dataLength=len(productData)
+                allProduct=[]
+                for num in range(dataLength):
+                    if productData[num]["productName"]!="":
+                        allProduct.append(productData[num])
+                return render_template('member.html',dataLength=dataLength,productData=allProduct,name=name)
+    elif site[8:20]=="24h.m.pchome":
+        mail=session.get('mail')
+        if site.find("?")==-1:       
+                # commodity="https://24h.pchome.com.tw/prod/QAAF7N-A9006CPTZ"
+                site=site.replace("https://24h.m.pchome.com.tw/prod/","")
+                # url="https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/button&id=&fields=Seq,Id,Price,Qty,ButtonType,SaleStatus,isPrimeOnly,SpecialQty,Device&_callback=jsonp_prodbutton&1662133140?_callback=jsonp_prodbutton"
+                url="https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/"+site[0:16]+"&fields=Seq,Id,Name,Nick,Store,PreOrdDate,SpeOrdDate,Price,Discount,Pic,Weight,ISBN,Qty,Bonus,isBig,isSpec,isCombine,isDiy,isRecyclable,isCarrier,isMedical,isBigCart,isSnapUp,isDescAndIntroSync,isFoodContents,isHuge,isEnergySubsidy,isPrimeOnly,isPreOrder24h,isWarranty,isLegalStore,isFresh,isBidding,isSet,Volume,isArrival24h,isETicket,ShipType,isO2O,RealWH,ShipDay,ShipTag,isEbook,isSubscription,Subscription&_callback=jsonp_prodmain&1662364260?_callback=jsonp_prodmain"
+                with req.urlopen(url) as response:
+                    commodity=response.read().decode("utf-8")
+                import json
+                commodity=commodity.replace('try{jsonp_prodmain(','')
+                commodity=commodity.replace(');}catch(e){if(window.console){console.log(e);}}','')
+                commodity=json.loads(commodity)
+                productName=str(commodity[site+"-000"]["Name"])
+                collection.update_one({
+                    "mail":mail
+                },{
+                    "$push":{
+                        "productData":
+                            {"productName":productName,"productSite":originSite}
+                    }
+                })
+
+                #更新使用者資料庫後，馬上回傳使用者所有追蹤的網站(包含剛剛新增的)
+                userData=collection.find_one({
+                "mail":mail
+                })
+                productData=userData["productData"]
+                name=userData["name"]
+                dataLength=len(productData)
+                allProduct=[]
+                for num in range(dataLength):
+                    if productData[num]["productName"]!="":
+                        allProduct.append(productData[num])
+                return render_template('member.html',dataLength=dataLength,productData=allProduct,name=name)
 
         else:
             #若確定網址有"?"就將?以及後面網址刪除，以利得到產品編號
@@ -188,7 +270,7 @@ def getPrice():
             noNeedSite=site[startOfDelete:lengthOfSite]
             needSite=site.replace(noNeedSite,'')
             # commodity="https://24h.pchome.com.tw/prod/QAAF7N-A9006CPTZ"
-            site=needSite.replace("https://24h.pchome.com.tw/prod/","")
+            site=needSite.replace("https://24h.m.pchome.com.tw/prod/","")
             # url="https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/button&id=&fields=Seq,Id,Price,Qty,ButtonType,SaleStatus,isPrimeOnly,SpecialQty,Device&_callback=jsonp_prodbutton&1662133140?_callback=jsonp_prodbutton"
             url="https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/"+site[0:16]+"&fields=Seq,Id,Name,Nick,Store,PreOrdDate,SpeOrdDate,Price,Discount,Pic,Weight,ISBN,Qty,Bonus,isBig,isSpec,isCombine,isDiy,isRecyclable,isCarrier,isMedical,isBigCart,isSnapUp,isDescAndIntroSync,isFoodContents,isHuge,isEnergySubsidy,isPrimeOnly,isPreOrder24h,isWarranty,isLegalStore,isFresh,isBidding,isSet,Volume,isArrival24h,isETicket,ShipType,isO2O,RealWH,ShipDay,ShipTag,isEbook,isSubscription,Subscription&_callback=jsonp_prodmain&1662364260?_callback=jsonp_prodmain"
             with req.urlopen(url) as response:
@@ -219,6 +301,96 @@ def getPrice():
                 if productData[num]["productName"]!="":
                     allProduct.append(productData[num])
             return render_template('member.html',dataLength=dataLength,productData=allProduct,name=name)
+    elif site[12:20]=="momoshop" or site[8:18]=="m.momoshop":
+        mail=session.get('mail')
+        #建立request 物件，附加request Headers 的資訊
+        getrequest=req.Request(site, headers={
+            "User-Agent":"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Mobile Safari/537.36"
+        })
+        with req.urlopen(getrequest) as response:
+            data=response.read().decode('utf-8')
+        root=bs4.BeautifulSoup(data,"html.parser")
+        productName=root.find("span",class_="prdName")
+        productName=productName.string
+        collection.update_one({
+                "mail":mail
+            },{
+                "$push":{
+                    "productData":
+                        {"productName":productName,"productSite":site}
+                }
+            })
+        userData=collection.find_one({
+            "mail":mail
+            })
+        productData=userData["productData"]
+        name=userData["name"]
+        dataLength=len(productData)
+        allProduct=[]
+        for num in range(dataLength):
+            if productData[num]["productName"]!="":
+                allProduct.append(productData[num])
+        return render_template('member.html',dataLength=dataLength,productData=allProduct,name=name)
+    elif site[8:29]=="tw.mall.yahoo.com/amp":
+            mail=session.get('mail')
+            #建立request 物件，附加request Headers 的資訊
+            getrequest=req.Request(site, headers={
+                "User-Agent":"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Mobile Safari/537.36"
+            })
+            with req.urlopen(getrequest) as response:
+                data=response.read().decode('utf-8')
+            root=bs4.BeautifulSoup(data,"html.parser")
+            productName=root.find("p",class_="item-title pure-u")
+            productName=productName.string
+            collection.update_one({
+                    "mail":mail
+                },{
+                    "$push":{
+                        "productData":
+                            {"productName":productName,"productSite":site}
+                    }
+                })
+            userData=collection.find_one({
+                "mail":mail
+                })
+            productData=userData["productData"]
+            name=userData["name"]
+            dataLength=len(productData)
+            allProduct=[]
+            for num in range(dataLength):
+                if productData[num]["productName"]!="":
+                    allProduct.append(productData[num])
+            return render_template('member.html',dataLength=dataLength,productData=allProduct,name=name) 
+    elif site[8:21]=="tw.mall.yahoo" or site[8:23]=="m.tw.mall.yahoo":
+        mail=session.get('mail')
+        #建立request 物件，附加request Headers 的資訊
+        getrequest=req.Request(site, headers={
+            "User-Agent":"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Mobile Safari/537.36"
+        })
+        with req.urlopen(getrequest) as response:
+            data=response.read().decode('utf-8')
+        root=bs4.BeautifulSoup(data,"html.parser")
+        productName=root.find("h1",class_="ProductInfo__Title-sc-496e9a24-1 faURrd")
+        productName=productName.string
+        collection.update_one({
+                "mail":mail
+            },{
+                "$push":{
+                    "productData":
+                        {"productName":productName,"productSite":site}
+                }
+            })
+        userData=collection.find_one({
+            "mail":mail
+            })
+        productData=userData["productData"]
+        name=userData["name"]
+        dataLength=len(productData)
+        allProduct=[]
+        for num in range(dataLength):
+            if productData[num]["productName"]!="":
+                allProduct.append(productData[num])
+        return render_template('member.html',dataLength=dataLength,productData=allProduct,name=name) 
 
     else:
         mail=session.get('mail')
@@ -233,7 +405,7 @@ def getPrice():
             if productData[num]["productName"]!="":
                 allProduct.append(productData[num])
         return render_template('member.html',dataLength=dataLength,productData=allProduct,name=name,error="抱歉!該網址不支援，請換其他商品")
-#刪除section
+
 @app.route('/delete.html',methods=["POST"])
 def delete():
     if 'mail' in session:
@@ -262,7 +434,6 @@ def delete():
                     }
                 })
               
-        #
         if productData==[]:
             return render_template('member.html',mail=mail)
         else:
@@ -310,11 +481,9 @@ def sendDataLength(mail):
     dataLength=len(data)
     return render_template('member.html',dataLength=dataLength)
 
-   
-
 def crawlerPrice(site,mail,name,productName):  
     import urllib.request as req
-    if site[8:11]=="24h":
+    if site[8:18]=="24h.pchome":
         # commodity="https://24h.pchome.com.tw/prod/QAAF7N-A9006CPTZ"
         newSite=site.replace("https://24h.pchome.com.tw/prod/","")
         # url="https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/button&id=&fields=Seq,Id,Price,Qty,ButtonType,SaleStatus,isPrimeOnly,SpecialQty,Device&_callback=jsonp_prodbutton&1662133140?_callback=jsonp_prodbutton"
@@ -329,15 +498,110 @@ def crawlerPrice(site,mail,name,productName):
                 commodity=json.loads(commodity)
                 productName=str(commodity[newSite+"-000"]["Name"])
                 price=str(commodity[newSite+"-000"]["Price"]["P"])
+                price="$"+price
                 pic=str(commodity[newSite+"-000"]["Pic"]["B"])
-                priceMin=""
-                priceMax=""
-                return sendMail(priceMin,priceMax,productName,price,mail,site,pic,name)
+                pic="https://cs-b.ecimg.tw/"+pic
+                return sendMail(productName,price,mail,site,pic,name)
             else:
                 #商品沒在架上，發信通知使用者
                 return sendNoProductMail(productName,mail,name)
-
-
+    elif site[8:20]=="24h.m.pchome":
+        # commodity="https://24h.pchome.com.tw/prod/QAAF7N-A9006CPTZ"
+        newSite=site.replace("https://24h.m.pchome.com.tw/prod/","")
+        # url="https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/button&id=&fields=Seq,Id,Price,Qty,ButtonType,SaleStatus,isPrimeOnly,SpecialQty,Device&_callback=jsonp_prodbutton&1662133140?_callback=jsonp_prodbutton"
+        url="https://ecapi.pchome.com.tw/ecshop/prodapi/v2/prod/"+newSite[0:16]+"&fields=Seq,Id,Name,Nick,Store,PreOrdDate,SpeOrdDate,Price,Discount,Pic,Weight,ISBN,Qty,Bonus,isBig,isSpec,isCombine,isDiy,isRecyclable,isCarrier,isMedical,isBigCart,isSnapUp,isDescAndIntroSync,isFoodContents,isHuge,isEnergySubsidy,isPrimeOnly,isPreOrder24h,isWarranty,isLegalStore,isFresh,isBidding,isSet,Volume,isArrival24h,isETicket,ShipType,isO2O,RealWH,ShipDay,ShipTag,isEbook,isSubscription,Subscription&_callback=jsonp_prodmain&1662364260?_callback=jsonp_prodmain"
+        with req.urlopen(url) as response:
+            commodity=response.read().decode("utf-8")
+            #如果沒有出現下面的訊息代表該商品還在架上
+            if commodity!="try{jsonp_prodmain([]);}catch(e){if(window.console){console.log(e);}}":
+                import json
+                commodity=commodity.replace('try{jsonp_prodmain(','')
+                commodity=commodity.replace(');}catch(e){if(window.console){console.log(e);}}','')
+                commodity=json.loads(commodity)
+                productName=str(commodity[newSite+"-000"]["Name"])
+                price=str(commodity[newSite+"-000"]["Price"]["P"])
+                price="$"+price
+                pic=str(commodity[newSite+"-000"]["Pic"]["B"])
+                pic="https://cs-b.ecimg.tw/"+pic
+                return sendMail(productName,price,mail,site,pic,name)
+            else:
+                #商品沒在架上，發信通知使用者
+                return sendNoProductMail(productName,mail,name)
+    elif site[12:20]=="momoshop" or site[8:18]=="m.momoshop":
+        import urllib.request as req
+        #建立request 物件，附加request Headers 的資訊
+        getrequest=req.Request(site, headers={
+            "User-Agent":"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Mobile Safari/537.36"
+        })
+        with req.urlopen(getrequest) as response:
+            data=response.read().decode('utf-8')
+        root=bs4.BeautifulSoup(data,"html.parser")
+        productName=root.find("span",class_="prdName")
+        productName=productName.string
+        productName=str(productName)
+        price=root.find("p",class_="priceTxtArea")
+        price=price.find("b")
+        price=price.string
+        price=str(price)
+        price="$"+price
+        pic=root.find("img",id="flaotMainImg")
+        pic=pic.get('src')
+        pic=str(pic)
+        return sendMail(productName,price,mail,site,pic,name)
+    elif site[8:29]=="tw.mall.yahoo.com/amp":
+        import urllib.request as req
+        #建立request 物件，附加request Headers 的資訊
+        getrequest=req.Request(site, headers={
+            "User-Agent":"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Mobile Safari/537.36"
+        })
+        with req.urlopen(getrequest) as response:
+            data=response.read().decode('utf-8')
+        root=bs4.BeautifulSoup(data,"html.parser")
+        productName=root.find("p",class_="item-title pure-u")
+        productName=str(productName.string)
+        originPrice=root.find("span",class_="price")#yahoo 原價
+        promoPrice=root.find("span",class_="infomations__promote")#yahoo 特價
+        pic=root.find("aside",class_="item-images custom-loader")#yahoo 圖片
+        pic=pic.find("amp-img").get("src")
+        pic=str(pic)
+        #如果沒有更優惠的價格，originPrice就是最便宜
+        if promoPrice==None:
+            price=originPrice.string
+            price=str(price)
+            return sendMail(productName,price,mail,site,pic,name)
+        else:
+            price=promoPrice.string
+            price=price.replace(">","") 
+            price=str(price)
+            return sendMail(productName,price,mail,site,pic,name)
+    elif site[8:21]=="tw.mall.yahoo" or site[8:23]=="m.tw.mall.yahoo":
+        import urllib.request as req
+        #建立request 物件，附加request Headers 的資訊
+        getrequest=req.Request(site, headers={
+            "User-Agent":"Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Mobile Safari/537.36"
+        })
+        with req.urlopen(getrequest) as response:
+            data=response.read().decode('utf-8')
+        root=bs4.BeautifulSoup(data,"html.parser")
+        productName=root.find("h1",class_="ProductInfo__Title-sc-496e9a24-1 faURrd")
+        productName=productName.string
+        productName=str(productName)
+        originPrice=root.find("span",class_="price")#yahoo 原價
+        promoPrice=root.find("a",class_="promoPrice")#yahoo 特價
+        pic=root.find("figure",class_="ImageCarousel__Slide-sc-b5ccee8b-1")#yahoo 圖片
+        pic=pic.img.get('src')
+        pic=str(pic)
+        #如果沒有更優惠的價格，originPrice就是最便宜
+        if promoPrice==None:
+            price=originPrice.string
+            price=str(price)
+            return sendMail(productName,price,mail,site,pic,name)
+        else:
+            price=promoPrice.string
+            price=price.replace(">","") 
+            price=str(price)
+            return sendMail(productName,price,mail,site,pic,name)
+        
 def getSiteFromDb():
     db = client.test #操作資料庫
     collection=db.users #操作users集合
@@ -354,7 +618,6 @@ def getSiteFromDb():
         else:
             return
             
-
 def sendNoProductMail(productName,mail,name):
     #sendMail(productName,mail,name)
     import email.message
@@ -374,7 +637,7 @@ def sendNoProductMail(productName,mail,name):
             box-sizing: border-box;">
     <div class="content" 
         style="background: linear-gradient(130deg, #A4BFEF 50%, #6A93CB 100%);
-                width:70vw;
+                width:80vw;
                 margin:auto;
                 ">
         <p style="margin: 1rem;
@@ -385,7 +648,7 @@ def sendNoProductMail(productName,mail,name):
         <h2 style="text-align: center;color:#000000">"""+productName+"""</h2>
         <h3 style="text-align: center; color:red">很抱歉! 您所追蹤的商品已下架。</h3>
         <img src="https://cdn.pixabay.com/photo/2018/01/04/15/51/404-error-3060993__340.png" alt="" 
-        style="display: block;width: 35%;
+        style="display: block;width: 45%;
                margin: auto; padding: 1rem;
                border-radius: 20px;
                object-fit:cover">
@@ -402,7 +665,7 @@ def sendNoProductMail(productName,mail,name):
         border-radius: 30px;">新增其他商品</a><br>
     </div>
         <footer style="background-color: #e3e3e3;
-                        width: 70vw;
+                        width: 80vw;
                         margin: auto;
                         padding: 2rem 0;">
             <p style="margin-left: 1rem;
@@ -414,12 +677,11 @@ def sendNoProductMail(productName,mail,name):
             """,subtype="html")
     import smtplib
     server=smtplib.SMTP_SSL("smtp.gmail.com",465)
-    server.login("mrcrawler987@gmail.com","xxx")
+    server.login("mrcrawler987@gmail.com","tdfaxmqegjpdpfot")
     server.send_message(msg)
     server.close()
 
-def sendMail(priceMin,priceMax,productName,price,mail,site,pic,name):
-    #sendMail(productName,mail,name)
+def sendMail(productName,price,mail,site,pic,name):
     import email.message
     msg=email.message.EmailMessage()
     msg["From"]="mrcrawler987@gmail.com"
@@ -427,8 +689,7 @@ def sendMail(priceMin,priceMax,productName,price,mail,site,pic,name):
     msg["Subject"]=productName
 
     #純文字內容
-    if priceMin=="":
-        msg.add_alternative("""\
+    msg.add_alternative("""\
         <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -439,7 +700,7 @@ def sendMail(priceMin,priceMax,productName,price,mail,site,pic,name):
             box-sizing: border-box;">
     <div class="content" 
         style="background: linear-gradient(130deg, #A4BFEF 50%, #6A93CB 100%);
-                width:70vw;
+                width:80vw;
                 margin:auto;
                 ">
         <p style="margin: 1rem;
@@ -448,9 +709,9 @@ def sendMail(priceMin,priceMax,productName,price,mail,site,pic,name):
                 font-size: 1.3rem;
                 color:#000000">Hi　"""+name+""":</p>
         <h2 style="text-align: center;color:#000000">"""+productName+"""</h2>
-        <h3 style="text-align: center; color:#000000">目前價格為: <span style="color: red;font-size: 1.5rem; font-weight: 700;"> $"""+price+"""</span></h3>
-        <img src="https://cs-b.ecimg.tw/"""+pic+"""" alt="" 
-        style="display: block;width: 35%;
+        <h3 style="text-align: center; color:#000000">目前價格為: <span style="color: red;font-size: 1.5rem; font-weight: 700;"> """+price+"""</span></h3>
+        <img src='"""+pic+"""' alt="" 
+        style="display: block;width: 50%;
                margin: auto; padding: 1rem;
                border-radius: 20px;
                object-fit:cover">
@@ -467,7 +728,7 @@ def sendMail(priceMin,priceMax,productName,price,mail,site,pic,name):
         border-radius: 30px;">點我購買</a><br>
     </div>
         <footer style="background-color: #e3e3e3;
-                        width: 70vw;
+                        width: 80vw;
                         margin: auto;
                         padding: 2rem 0;">
             <p style="margin-left: 1rem;
@@ -478,20 +739,19 @@ def sendMail(priceMin,priceMax,productName,price,mail,site,pic,name):
     </body>
     </html>
             """,subtype="html")
-    else: 
-        msg.set_content("$"+priceMin+"~"+"$"+priceMax)
     #html內容
     
     import smtplib
     server=smtplib.SMTP_SSL("smtp.gmail.com",465)
-    server.login("mrcrawler987@gmail.com","xxx")
+    server.login("mrcrawler987@gmail.com","tdfaxmqegjpdpfot")
     server.send_message(msg)
     server.close()
 
 scheduler = BackgroundScheduler(daemon=True)
-#scheduler.add_job(getSiteFromDb, 'interval', seconds=3)
+#scheduler.add_job(getSiteFromDb, 'interval', seconds=5)
 scheduler.add_job(getSiteFromDb, 'cron',day_of_week='mon-sun',  hour=12, minute=00,timezone='Asia/Taipei')
 scheduler.start() 
 
 if __name__ == "__main__":
+    app.debug = True
     app.run()

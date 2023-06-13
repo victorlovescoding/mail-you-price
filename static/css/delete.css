@@ -1,0 +1,58 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+h1 {
+  text-align: center;
+}
+h1 span {
+  display: block;
+  word-wrap: break-word;
+  font-size: 1rem;
+}
+h4 {
+  margin: 0;
+}
+#productContainer p {
+  margin: 0.5rem auto;
+}
+#productData,
+#dataLength {
+  display: none;
+}
+#logOutBtn {
+  cursor: pointer;
+}
+#logOutBtn a {
+  font-size: 0.5rem;
+  text-decoration: none;
+  color: black;
+}
+#trackContainer {
+  width: 85vw;
+  margin: auto;
+}
+form {
+  margin: 1rem auto;
+}
+#trackContainer * {
+  text-align: center;
+  margin-right: 1rem;
+}
+#track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 1.5rem auto;
+}
+#track a {
+  color: black;
+}
+#track a:hover {
+  color: red;
+}
+i {
+  font-size: 1.5rem;
+}

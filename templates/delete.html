@@ -4,138 +4,33 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" href="https://img.freepik.com/free-vector/cute-spider-with-net-cartoon-illustration-animal-nature-concept-isolated-flat-cartoon-style_138676-2730.jpg?w=900&t=st=1670310671~exp=1670311271~hmac=26d1834ccffa459dc363fa6a5fbb2fc63bf7849a1a370b2845653617678e6982">
+    <link
+      rel="icon"
+      href="https://img.freepik.com/free-vector/cute-spider-with-net-cartoon-illustration-animal-nature-concept-isolated-flat-cartoon-style_138676-2730.jpg?w=900&t=st=1670310671~exp=1670311271~hmac=26d1834ccffa459dc363fa6a5fbb2fc63bf7849a1a370b2845653617678e6982"
+    />
+    <link rel="stylesheet" href="../static/css/delete.css" />
     <title>Mail You Price</title>
-    <style>
-      *{
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-        font-size: 1rem;
-      }
-      h1{
-          text-align: center;
-      }
-      h1 span{
-          display: block;
-          word-wrap: break-word;
-          font-size: 1rem;
-      }
-      h4{
-          margin: 0;
-      }
-      #productContainer p{
-          margin: .5rem auto;
-      }
-      #productData,#dataLength{
-          display: none;
-      }
-      #logOutBtn{
-        cursor: pointer;
-      }
-      #logOutBtn a{
-        font-size: .5rem;
-        text-decoration: none;
-        color: black;
-      }
-      #trackContainer{
-          width: 85vw;
-          margin: auto;
-      }
-      form{
-          margin: 1rem auto;
-      }
-      #trackContainer *{
-          text-align: center;
-          margin-right: 1rem;
-          
-      }
-      #track{
-          display: flex;
-          align-items: center;
-          justify-content: center ;
-          margin: 1.5rem auto;
-      }
-      #track a{
-          color: black;
-      }
-      #track a:hover{
-          color: red;
-      }
-      i{
-          font-size: 1.5rem;
-      }
-  </style>
   </head>
   <body>
-    <h1><span>{{mail}}</span> 歡迎來到會員系統!<a id="logOutBtn" href="/logout">登出</a></h1>
+    <h1>
+      <span>{{mail}}</span> 歡迎來到會員系統!<a id="logOutBtn" href="/logout"
+        >登出</a
+      >
+    </h1>
     <h1 id="productData">{{productData}}</h1>
     <div id="trackContainer">
       <form action="/member.html" method="post">
         <input type="text" name="productSite" />
         <button type="submit">新增商品</button>
       </form>
-
     </div>
     <form id="deleteForm" action="/member" method="post">
-      <input id="deleteInput" type="text" name="deleteItem">
+      <input id="deleteInput" type="text" name="deleteItem" />
     </form>
-    <script src="https://kit.fontawesome.com/3b9660ae0a.js" crossorigin="anonymous"></script>
-    <script>
-      let productData = document.getElementById("productData").textContent;
-      const form = document.querySelector("form");  
-      const deleteInput = document.getElementById("deleteInput");  
-      const deleteForm = document.getElementById("deleteForm");
-      const deleteBtn=document.getElementById('deleteBtn')  
-      let dataLength=0;
-      const trackContainer = document.getElementById("trackContainer");
-      productData=productData.replaceAll('"',"'")
-      productData=productData.replaceAll("{'productName': '', 'productSite': ''}","")
-      productData=productData.replaceAll("{'",'{"')
-      productData=productData.replaceAll("'}",'"}')
-      productData=productData.replaceAll("':",'":')
-      productData=productData.replaceAll(": '",': "')
-      productData=productData.replaceAll("', '",'", "')
-      
-      productData=productData.replaceAll("[,","[")
-      productData=productData.replaceAll(", ]"," ]")
-      productData=productData.replaceAll(", ,",',')
-
-      //用迴圈找出{的數量代表有幾筆資料
-      for(let num=0;num<productData.length;num++){
-        if (productData[num]=="{"){
-          dataLength+=1         
-        }   
-      }
-      console.log(productData);
-      productData = JSON.parse(productData);
-      getDataLength(productData,dataLength)
-
-      function getDataLength(productData,dataLength){
-          if (dataLength!= "") {
-            for (num = 0; num < dataLength; num++) {
-              const div = document.createElement("div");
-              div.id="track"
-              div.innerHTML = `
-                <div id="productContainer">
-                    <h4>${productData[num]["productName"]}</h4>
-                    <a href="${productData[num]["productSite"]}">購物去</a>
-                </div>
-                <i class="fa-solid fa-trash"></i>
-                `
-                form.appendChild(div);
-                const h4=document.querySelector('h4')
-
-                div.addEventListener('click',()=>{
-                  if (confirm("確定要移除追蹤?")==true){
-                    let deleteItem=div.textContent
-                    deleteInput.value=deleteItem
-                    deleteForm.submit()
-                  }     
-                })    
-            }           
-          }        
-        }   
-    </script>
+    <script
+      src="https://kit.fontawesome.com/3b9660ae0a.js"
+      crossorigin="anonymous"
+    ></script>
+    <script src="../static/js/delete.js"></script>
   </body>
 </html>

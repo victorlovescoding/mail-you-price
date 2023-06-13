@@ -1,0 +1,287 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: "Microsoft JhengHei", sans-serif;
+}
+body {
+  background-color: #f1f2f2;
+}
+
+header {
+  height: 100vh;
+  background: linear-gradient(130deg, #a4bfef 50%, #6a93cb 100%);
+  background-size: cover;
+}
+header button {
+  cursor: pointer;
+  background-color: #40739e;
+  font-size: 1.5rem;
+  border-radius: 30px;
+  display: block;
+  color: #ffffff;
+  padding: 1rem;
+  font-weight: bold;
+  border-radius: 30px;
+  border: none;
+}
+header a {
+  margin-top: 1rem;
+  width: fit-content;
+  display: block;
+  cursor: pointer;
+  color: #40739e;
+  font-size: 1.5rem;
+  text-decoration: none;
+  border-radius: 30px;
+  background-color: #ffffff;
+  padding: 0.7rem;
+  font-weight: bold;
+  border-radius: 30px;
+  border: none;
+}
+header a:hover {
+  background-color: #40739e;
+  color: #ffffff;
+}
+
+header button:hover {
+  color: #40739e;
+  background-color: #ffffff;
+}
+header .banner {
+  height: 40vh;
+  color: #ffffff;
+  line-height: 1.7;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+header h1 {
+  font-size: 2.5rem;
+}
+header h2 {
+  font-size: 2rem;
+}
+.memberShip {
+  position: relative;
+  width: 85vw;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.1);
+}
+#head {
+  display: flex;
+  justify-content: center;
+}
+#memberContainer {
+  width: fit-content;
+  margin: auto;
+  box-shadow: 0px 5px 5px 5px rgba(0, 0, 0, 0.1);
+}
+h3 {
+  font-size: 1.3rem;
+  padding: 1.5rem;
+  cursor: pointer;
+  text-align: center;
+}
+#logIn {
+  width: 50%;
+}
+#signUp {
+  background-color: #f1f2f2;
+  width: 50%;
+}
+form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+form input {
+  width: 85%;
+  padding: 0.5rem;
+  border: none;
+  border: 1px solid #e6e8e8;
+}
+#nameInput {
+  display: none;
+}
+form #loginBtn {
+  cursor: pointer;
+  width: 85%;
+  font-size: 1.2rem;
+  font-weight: bold;
+  background-color: #4da55f;
+  color: #ffffff;
+  border: none;
+  padding: 1rem 0;
+  margin-bottom: 1rem;
+}
+#successMsg {
+  margin: 0.3rem;
+  color: red;
+  font-weight: bold;
+}
+.advertisement {
+  margin: 3.5rem 0.5rem;
+  border-bottom: 2px solid #cccccc;
+  padding-bottom: 3rem;
+}
+.advertisement .left h2,
+.advertisement .left p {
+  width: 80vw;
+  margin: 0.7rem auto;
+}
+.advertisement img {
+  display: block;
+  width: 90vw;
+  margin: auto;
+  border-radius: 20px;
+}
+.feature {
+  margin-top: 2rem;
+  border-bottom: 3px solid #cccccc;
+}
+.feature div {
+  margin: 4rem 0;
+}
+.feature div img {
+  display: block;
+  width: 40vw;
+  margin: auto;
+  border-radius: 50%;
+  box-shadow: 0 0 10px 2px #3333331a;
+}
+
+.instruction h2 {
+  text-align: center;
+  margin: 3rem auto 3rem auto;
+  padding-left: 1rem;
+  border-left: 5px solid #40739e;
+  width: fit-content;
+}
+.instruction img {
+  display: block;
+  width: 80vw;
+  margin: auto;
+  border-radius: 15px;
+  box-shadow: 0 0 10px 2px #3333331a;
+}
+.instruction div {
+  margin: 3rem 0;
+}
+.instruction div p {
+  text-align: center;
+  margin-top: 0.5rem;
+  color: #353b48;
+  font-weight: 600;
+  font-size: 1.5rem;
+}
+footer {
+  background-color: #223344;
+  padding: 1.5rem;
+}
+footer p {
+  color: #ededed;
+  text-align: center;
+}
+.email {
+  margin: 1.5rem 0;
+}
+@media screen and (min-width: 660px) {
+  header h1 {
+    font-size: 5.5rem;
+  }
+  header h2 {
+    font-size: 3rem;
+  }
+  .memberShip {
+    max-width: 400px;
+    height: fit-content;
+  }
+  .advertisement {
+    display: flex;
+    align-items: center;
+  }
+  .advertisement .left {
+    width: 50%;
+  }
+  .advertisement .left h2 {
+    font-size: 1.8rem;
+  }
+  .advertisement .left p {
+    font-size: 1.3rem;
+    font-weight: 500;
+  }
+  .advertisement .left h2,
+  .advertisement .left p {
+    width: 80%;
+    line-height: 1.7;
+  }
+  .advertisement img {
+    width: 50%;
+  }
+  .feature {
+    display: flex;
+    justify-content: center;
+  }
+  .feature div img {
+    width: 20vw;
+  }
+  .feature div {
+    width: 30vw;
+  }
+  .instruction h2 {
+    font-size: 3rem;
+  }
+  .instruction div {
+    width: 40vw;
+  }
+  .instruction div img {
+    width: 100%;
+  }
+  .instruction div:nth-of-type(1) {
+    margin-left: 5vw;
+  }
+  .instruction div:nth-of-type(2) {
+    margin-left: 55vw;
+  }
+  .instruction div:nth-of-type(3) {
+    margin-left: 5vw;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  .advertisement .left h2 {
+    font-size: 2.5rem;
+  }
+  .advertisement .left p {
+    font-size: 1.7rem;
+    font-weight: 500;
+  }
+  .advertisement .left h2,
+  .advertisement .left p {
+    text-align: center;
+  }
+  .advertisement img {
+    width: 23%;
+    margin-left: 0;
+  }
+  .feature div img {
+    width: 10vw;
+  }
+  .instruction div img {
+    width: 20vw;
+    margin-bottom: 1rem;
+  }
+  .instruction div:nth-of-type(1) {
+    margin-left: 7vw;
+  }
+  .instruction div:nth-of-type(2) {
+    margin-left: 45vw;
+  }
+  .instruction div:nth-of-type(3) {
+    margin-left: 7vw;
+  }
+}
