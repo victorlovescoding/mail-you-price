@@ -7,7 +7,7 @@ import pymongo,certifi
 from apscheduler.schedulers.background import BackgroundScheduler
 #資料庫連接
 
-client = pymongo.MongoClient("mongodb+srv://victordb:db2021@victorcluster.cu5rdb9.mongodb.net/?retryWrites=true&w=majority", tlsCAFile=certifi.where())
+client = pymongo.MongoClient(mongodb information)
 db = client.test #操作資料庫
 collection=db.users #操作users集合
 app=Flask(
